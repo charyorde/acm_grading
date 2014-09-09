@@ -1,0 +1,4 @@
+- find out how to use illuminate/validation or some other validation library
+- find out how to automatically annotate routes to automatically generate documentation
+- Clarify exam_score, ca_score in scores table
+- Validate roles
