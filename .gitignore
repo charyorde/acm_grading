@@ -1,2 +1,6 @@
 /vendor/
 /.settings/
+/todo
+/.project
+/.buildpath
+/config.ini

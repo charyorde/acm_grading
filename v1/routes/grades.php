@@ -7,7 +7,7 @@
  */
 $app->post('/grades', 'authenticate', function() use ($app){
 	//Ensure all required parameters are available
-	verifyRequiredParams(array('programme', 'course', 'uid', 'islocked', 'semester', 'academicsession', 'exam_score', 'ca_score', 'submittedby'));
+	verifyRequiredParams(array('programme', 'course', 'uid', 'islocked', 'semester', 'academicsession', 'submittedby'));
 
 	$response = array();
 	$programme = $app->request->post('programme');
@@ -16,11 +16,26 @@ $app->post('/grades', 'authenticate', function() use ($app){
 	$islocked = $app->request->post('islocked');
 	$semester = $app->request->post('semester');
 	$academicsession = $app->request->post('academicsession');
-	$exam_score = $app->request->post('exam_score');
-	$ca_score = $app->request->post('ca_score');
-	$submittedby = $app->request->post('submittedby');
-	if (!isset($app->request->post('overall'))){
+	if ($app->request->post('overall') == NULL || trim($app->request->post('overall')) == ''){
 		$overall = NULL;
+	} else {
+		$overall = $app->request->post('overall');
+	}
+	if ($app->request->post('exam_score') == NULL || trim($app->request->post('exam_score')) == ''){
+		$exam_score = NULL;
+	} else {
+		$exam_score = $app->request->post('exam_score');
+	}
+	if ($app->request->post('ca_score') == NULL || trim($app->request->post('ca_score')) == ''){
+		$ca_score = NULL;
+	} else {
+		$ca_score = $app->request->post('ca_score');
+	}
+	$submittedby = $app->request->post('submittedby');
+	if ($app->request->post('overall') == NULL || trim($app->request->post('ca_score'))== ''){
+		$overall = NULL;
+	} else {
+		$overall = $app->request->post('overall');
 	}
 
 	global $user_id;
@@ -46,7 +61,7 @@ $app->post('/grades', 'authenticate', function() use ($app){
 */
 $app->post('/grades/:id', 'authenticate', function($score_id) use ($app){
 	//Ensure all required parameters are available
-	verifyRequiredParams(array('programme', 'course', 'uid', 'islocked', 'semester', 'academicsession', 'exam_score', 'ca_score', 'submittedby'));
+	verifyRequiredParams(array('programme', 'course', 'uid', 'islocked', 'semester', 'academicsession', 'submittedby'));
 
 	$response = array();
 	$programme = $app->request->post('programme');
@@ -57,11 +72,23 @@ $app->post('/grades/:id', 'authenticate', function($score_id) use ($app){
 	$academicsession = $app->request->post('academicsession');
 	$exam_score = $app->request->post('exam_score');
 	$ca_score = $app->request->post('ca_score');
-	$submittedby = $app->request->post('submittedby');
-	if (!isset($app->request->post('overall'))){
-		$overall = NULL;
+	if ($app->request->post('exam_score') == NULL || trim($app->request->post('exam_score')) == ''){
+		$exam_score = NULL;
+	} else {
+		$exam_score = $app->request->post('exam_score');
 	}
-
+	if ($app->request->post('ca_score') == NULL || trim($app->request->post('ca_score')) == ''){
+		$ca_score = NULL;
+	} else {
+		$ca_score = $app->request->post('ca_score');
+	}
+	$submittedby = $app->request->post('submittedby');
+	if ($app->request->post('overall') == NULL || trim($app->request->post('ca_score'))== ''){
+		$overall = NULL;
+	} else {
+		$overall = $app->request->post('overall');
+	}
+	
 	$db = new DbHandler();
 	$result = $db->updateScore($score_id, $programme, $course, $uid, $islocked, $semester, $academicsession, $overall, $exam_score, $ca_score, $submittedby);
 
@@ -84,7 +111,7 @@ $app->post('/grades/:id', 'authenticate', function($score_id) use ($app){
 */
 $app->put('/grades/:id', 'authenticate', function($score_id) use ($app){
 	//Ensure all required parameters are available
-	verifyRequiredParams(array('programme', 'course', 'uid', 'islocked', 'semester', 'academicsession', 'exam_score', 'ca_score', 'submittedby'));
+	verifyRequiredParams(array('programme', 'course', 'uid', 'islocked', 'semester', 'academicsession', 'submittedby'));
 
 	$response = array();
 	$programme = $app->request->put('programme');
@@ -96,8 +123,20 @@ $app->put('/grades/:id', 'authenticate', function($score_id) use ($app){
 	$exam_score = $app->request->put('exam_score');
 	$ca_score = $app->request->put('ca_score');
 	$submittedby = $app->request->put('submittedby');
-	if (!isset($app->request->put('overall'))){
+	if ($app->request->put('exam_score') == NULL || trim($app->request->put('exam_score')) == ''){
+		$exam_score = NULL;
+	} else {
+		$exam_score = $app->request->put('exam_score');
+	}
+	if ($app->request->put('ca_score') == NULL || trim($app->request->put('ca_score')) == ''){
+		$ca_score = NULL;
+	} else {
+		$ca_score = $app->request->put('ca_score');
+	}
+	if ($app->request->put('overall') == NULL || trim($app->request->put('overall')) == ''){
 		$overall = NULL;
+	} else {
+		$overall = $app->request->put('overall');
 	}
 
 	$db = new DbHandler();

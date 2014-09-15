@@ -1,12 +1,12 @@
 <?php
 /**
  * User registration
- * url - /register
+ * url - /users/register
  * method - POST
  * params - username, password
  */
-$app->post('/register', function() use ($app){
-	verifyRequiredParams(array('name', 'email', 'password'));
+$app->post('/users/register', function() use ($app){
+	verifyRequiredParams(array('username', 'password'));
 
 	$response = array();
 
@@ -33,11 +33,11 @@ $app->post('/register', function() use ($app){
 
 /**
  * User login
- * url - /login
+ * url - /users/login
  * method - POST
  * params - username, password
  */
-$app->post('/login', function() use ($app){
+$app->post('/users/login', function() use ($app){
 	verifyRequiredParams(array('username', 'password'));
 
 	$username = $app->request()->post('username');

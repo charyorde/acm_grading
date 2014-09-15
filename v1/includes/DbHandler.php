@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 /**
  * Class to handle all db operations
  * This class will have CRUD methods for database tables
@@ -32,6 +34,8 @@ class DbHandler {
 			} else {
 				return USER_CREATE_FAILED;
 			}
+		} else {
+			return USER_ALREADY_EXISTED;
 		}
 	}
 	
@@ -49,9 +53,9 @@ class DbHandler {
 	 * @return boolean User login status success/fail
 	 */
 	public function checkLogin($username, $password){
-		$user_count = User::where('username', '=', $username)->count();
-		if ($user_count > 0){
-			if (PassHash::check_password($users[0]->password, $password)){
+		$user = User::where('username', '=', $username)->first();
+		if ($user != NULL){
+			if (PassHash::check_password($user->password, $password)){
 				return TRUE;				
 			} else {
 				return FALSE;
@@ -75,7 +79,7 @@ class DbHandler {
 	 * Get user by username
 	 * @param String $username
 	 */
-	private function getUserByUsername($username){
+	public function getUserByUsername($username){
 		$user = User::where('username', $username)->first();
 		return $user;
 	}
@@ -152,30 +156,29 @@ class DbHandler {
 		$score->islocked = $is_locked;
 		$score->semester = $semester;
 		$score->academicsession = $acad_session;
-		if (trim($exam_score) == ''){
-			$score->exam_score == NULL;
-		} else {
-			$score->exam_score = $exam_score;
-		}
+		$score->overall = $overall;
 		$score->score = $exam_score;
-		if (trim($ca_score) == ''){
-			$score->cascore = NULL;
-		} else {
-			$score->cascore = $ca_score;
-		}
+		$score->cascore = $ca_score;
+
 		$score->save();
 		
 		$total_score = $score->cascore + $score->score;
+		
+		$studentnumber = User::where('id', '=', $score->uid)->pluck('studentnumber');
 		
 		//we need to get the student number to add a grade
 		$student = $this->getUserById($uid);
 		$grade = new Grade;
 		$grade->exam_score = $exam_score;
-		$grade->test_score = $test_score;
+		$grade->test_score = $ca_score;
 		$grade->uid = $uid;
 		$grade->course = $course;
 		$grade->studentnumber = $studentnumber;
-		$grade->totalscore = $totalscore;
+		$grade->totalscore = $total_score;
+		$grade->submittedby = $submittedby;
+		$grade->grade = $this->gradeLetterByCountry($total_score, 'Nigeria'); // to be changed after further integration with full system - country - from config maybe?
+		$grade->gradepoint = (float) $this->gradePointByCountry($grade->grade, 'Nigeria') * 3.0; // to be changed after further integration with full system - course points and country
+		$grade->creditload = 3; // to be changed after further integration with full system - from course data?
 		$grade->save();
 		
 		return $score;
@@ -202,30 +205,31 @@ class DbHandler {
 		$score->islocked = $is_locked;
 		$score->semester = $semester;
 		$score->academicsession = $acad_session;
-		if (trim($exam_score) == ''){
-			$score->exam_score == NULL;
-		} else {
-			$score->exam_score = $exam_score;
-		}
 		$score->score = $exam_score;
-		if (trim($ca_score) == ''){
-			$score->cascore = NULL;
-		} else {
-			$score->cascore = $ca_score;
-		}
+		$score->cascore = $ca_score;
+		$score->overall = $overall;
 		$score->save();
 		
 		//whenever we update a score, we need to update the corresponding grade
-		$grade = Grade::where('course', '=', $course)->where('uid', '=', $uid)->where('semester', '=', $semester)->where('academicsession', '=', $acad_session)->first();
-		if ($grade != NULL){
-			$grade->exam_score = $score->score;
-			$grade->test_score = $score->cascore;
-			$grade->uid = $uid;
-			$grade->course = $course;
-			$grade->totalscore = $score->score + $score->cascore;
-		}
 		
-		if ($grade->save()){
+		$grade_id = Capsule::table('grades')->join('scores', 'scores.uid', '=', 'grades.uid')
+				 ->where('grades.course', '=', $course)
+				 ->where('grades.uid', '=', $uid)
+		         ->where('scores.semester', '=', $semester)
+		         ->where('scores.academicsession', '=', $acad_session)
+				 ->pluck('grades.id'); 
+		
+		if (!empty($grade_id)){
+			$updatedgrade['exam_score'] = $score->score;
+			$updatedgrade['test_score'] = $score->cascore;
+			$updatedgrade['uid'] = $uid;
+			$updatedgrade['course'] = $course;
+			$updatedgrade['totalscore'] = $score->score + $score->cascore;
+			$updatedgrade['grade'] = $this->gradeLetterByCountry($updatedgrade['totalscore'], 'Nigeria'); // to be changed after further integration with full system
+			$updatedgrade['gradepoint'] = (float) $this->gradePointByCountry($updatedgrade['grade'], 'Nigeria') * 3.0; // to be changed after further integration with full system - course credit and country
+			$updatedgrade['creditload'] = 3; // to be changed after further integration with full system
+			
+			Capsule::table('grades')->where('id', $grade_id)->update($updatedgrade);
 			return TRUE;
 		} else {
 			return FALSE;
@@ -240,12 +244,12 @@ class DbHandler {
 	public function gradePointByCountry($grade, $country){
 		$grade = Capsule::table('grading_scales')->join('country_system', 'grading_scales.grading_system_id', '=', 'country_system.grading_system_id')
 										->join('countries', 'country_system.country_id', '=', 'countries.id')
-										->where('country_name', '=', $country)
-										->where('grade', '=', $grade)
+										->where('countries.country_name', '=', $country)
+										->where('grading_scales.grade', '=', $grade)
 										->first();	
 		
-		if ($grade != NULL){
-			return $grade->points;
+		if (!empty($grade)){
+			return $grade['points'];
 		} else {
 			return NULL;
 		}
@@ -264,8 +268,8 @@ class DbHandler {
 						->orderBy('lower_bound', 'desc')
 						->first();
 		
-		if ($grade != NULL){
-			return $grade->grade;
+		if (!empty($grade)){
+			return $grade['grade'];
 		} else {
 			return NULL;
 		}
@@ -283,7 +287,7 @@ class DbHandler {
 					->first();
 		
 		if ($grade != NULL){
-			return $grade->points;
+			return $grade['points'];
 		} else {
 			return NULL;
 		}
@@ -301,7 +305,7 @@ class DbHandler {
 						->first();
 		
 		if ($grade != NULL){
-			return $grade->grade;
+			return $grade['grade'];
 		} else {
 			return NULL;
 		}
@@ -314,12 +318,22 @@ class DbHandler {
 	 * @param String $programme the student's programme
 	 */	
 	public function computeCumulativeGPA($uid, $student_number, $programme){
-		$totals = Capsule::table('grades')->where('uid', '=', $uid)->join('scores', 'scores.uid', '=', 'grades.uid')
-						->select(DB::raw('SUM(points) AS totalpoints, SUM(creditload) AS totalcredit'))
-						->where('grades.studentnumber', '=', $student_number)
-						->where('scores.programme', '=', $programme)->first();
-		if ($totals != NULL){
-			$gpa = (float) $totals->totalpoints / (float) $totals->totalcredit;
+		$grades = Capsule::table('grades')->join('scores', function($join){
+				$join->on('scores.uid', '=', 'grades.uid');
+				$join->on('scores.course', '=', 'grades.course');
+			})
+		    ->select(Capsule::raw('grades.gradepoint, grades.creditload'))
+		    ->where('grades.uid', '=', $uid)
+		    ->where('scores.programme', '=', $programme)->get();
+
+		if (!empty($grades)){
+			$totalpoints = 0.0;
+			$totalcredits = 0.0;
+			foreach ($grades as $grade){
+				$totalpoints = $totalpoints + (float) $grade['gradepoint'];
+				$totalcredits = $totalcredits + (float) $grade['creditload'];
+			}
+			$gpa = (float) $totalpoints / (float) $totalcredits;
 			return $gpa;
 		} else {
 			return NULL;
@@ -334,17 +348,26 @@ class DbHandler {
 	 * @param String $acad_session Academic session
 	 */
 	public function computeCurrentGPA($uid, $student_number, $semester, $acad_session){
-		$totals = Capsule::table('grades')->where('uid', '=', $uid)
-							->select(DB::raw('SUM(points) AS totalpoints, SUM(creditload) AS totalcredit'))
-							->where('semester', '=', $semester)
-							->where('studentnumber', '=', $student_number)
-							->where('academicsession', '=', $acad_session)
-							->first();
-		if ($totals != NULl){
-			$gpa = (float) $totals->totalpoints / (float) $totals->totalcredit;
+		$grades = Capsule::table('grades')->join('scores', function($join){
+				$join->on('scores.uid', '=', 'grades.uid');
+				$join->on('scores.course', '=', 'grades.course');
+			})
+		    ->select(Capsule::raw('grades.gradepoint, grades.creditload'))
+		    ->where('grades.uid', '=', $uid)
+			->where('scores.semester', '=', $semester)
+			->where('scores.academicsession', '=', $acad_session)->get();
+
+		if (!empty($grades)){
+			$totalpoints = 0.0;
+			$totalcredits = 0.0;
+			foreach ($grades as $grade){
+				$totalpoints = $totalpoints + (float) $grade['gradepoint'];
+				$totalcredits = $totalcredits + (float) $grade['creditload'];
+			}
+			$gpa = (float) $totalpoints / (float) $totalcredits;
 			return $gpa;
 		} else {
 			return NULL;
-		}
+		}	
 	}
 }

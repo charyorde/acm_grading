@@ -27,7 +27,7 @@ function verifyRequiredParams($required_fields){
 		$response['error'] = true;
 		$response['message'] = 'Required field(s) ' . substr($error_fields, 0, -2) . ' is missing or empty';
 		echoResponse(400, $response);
-		$app->stop;
+		$app->stop();
 	}
 }
 

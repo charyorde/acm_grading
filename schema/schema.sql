@@ -39,11 +39,13 @@ CREATE TABLE `country_system` (
   PRIMARY KEY (`id`),
   KEY `FK_country_system` (`country_id`),
   KEY `FK_grading_system` (`grading_system_id`),
-  CONSTRAINT `FK_grading_system` FOREIGN KEY (`grading_system_id`) REFERENCES `grading_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_country_system` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `FK_country_system` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_grading_system` FOREIGN KEY (`grading_system_id`) REFERENCES `grading_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
 /*Data for the table `country_system` */
+
+insert  into `country_system`(`id`,`country_id`,`grading_system_id`) values (1,165,3),(2,237,4);
 
 /*Table structure for table `grades` */
 
@@ -60,21 +62,21 @@ CREATE TABLE `grades` (
   `totalscore` int(11) DEFAULT NULL,
   `grade` varchar(3) DEFAULT NULL,
   `gradepoint` float DEFAULT NULL,
-  `dropped` tinyint(4) DEFAULT NULL,
+  `dropped` tinyint(4) DEFAULT '0',
   `creditload` int(11) DEFAULT NULL,
-  `approved` tinyint(4) DEFAULT NULL,
+  `approved` tinyint(4) DEFAULT '0',
   `submittedby` int(11) DEFAULT NULL,
-  `submitted` tinyint(4) DEFAULT NULL,
+  `submitted` tinyint(4) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK_submittedby` (`submittedby`),
   KEY `FK_grades` (`uid`),
   CONSTRAINT `FK_grades` FOREIGN KEY (`uid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_submittedby` FOREIGN KEY (`submittedby`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 /*Data for the table `grades` */
 
-insert  into `grades`(`id`,`exam_score`,`test_score`,`uid`,`course`,`studentnumber`,`currentgpa`,`totalscore`,`grade`,`gradepoint`,`dropped`,`creditload`,`approved`,`submittedby`,`submitted`) values (1,55,31,1,1,'10819960',NULL,86,'A',5,0,3,0,1,1),(2,53,26,1,2,'10819960',NULL,79,'A',5,0,3,0,1,1);
+insert  into `grades`(`id`,`exam_score`,`test_score`,`uid`,`course`,`studentnumber`,`currentgpa`,`totalscore`,`grade`,`gradepoint`,`dropped`,`creditload`,`approved`,`submittedby`,`submitted`) values (1,44,32,1,1,'10819960',NULL,76,'A',15,NULL,3,NULL,1,NULL),(2,58,32,1,2,'10819960',NULL,90,'A',15,NULL,3,NULL,1,NULL),(3,42,39,1,3,'10819960',NULL,81,'A',15,NULL,3,NULL,1,NULL),(4,45,40,1,4,'10819960',NULL,85,'A',15,NULL,3,NULL,1,NULL),(5,55,33,1,5,'10819960',NULL,88,'A',15,NULL,3,NULL,1,NULL),(6,55,34,1,6,'10819960',NULL,89,'A',15,NULL,3,NULL,1,NULL),(7,44,30,2,1,'10819961',NULL,74,'A',15,NULL,3,NULL,1,NULL),(8,44,30,2,2,'10819961',NULL,74,'A',15,NULL,3,NULL,1,NULL),(9,44,35,2,3,'10819961',NULL,79,'A',15,NULL,3,NULL,1,NULL),(10,40,23,2,4,'10819961',NULL,63,'B',12,NULL,3,NULL,1,NULL),(11,33,20,2,5,'10819961',NULL,53,'C',9,NULL,3,NULL,1,NULL),(12,55,21,2,6,'10819961',NULL,76,'A',15,NULL,3,NULL,1,NULL),(13,44,22,2,7,'10819961',NULL,66,'B',12,NULL,3,NULL,1,NULL),(14,20,25,2,8,'10819961',NULL,45,'D',6,NULL,3,NULL,1,NULL),(17,60,25,1,8,'10819960',NULL,85,'A',15,0,3,0,1,0);
 
 /*Table structure for table `grading_scales` */
 
@@ -91,11 +93,11 @@ CREATE TABLE `grading_scales` (
   PRIMARY KEY (`id`),
   KEY `FK_grading_scales` (`grading_system_id`),
   CONSTRAINT `FK_grading_scales` FOREIGN KEY (`grading_system_id`) REFERENCES `grading_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
 /*Data for the table `grading_scales` */
 
-insert  into `grading_scales`(`id`,`grading_system_id`,`lower_bound`,`upper_bound`,`grade`,`points`,`description`) values (1,1,70,100,'A',4,NULL),(2,1,60,69,'B+',3.3,NULL),(3,1,50,59,'B',3,NULL),(4,1,45,49,'C+',2.3,NULL),(5,1,40,44,'C',2,NULL),(6,1,0,39,'F',0,NULL),(7,2,75,100,'A',4,NULL),(8,2,70,74,'A-',3.7,NULL),(9,2,60,69,'B',3,NULL),(10,2,50,59,'C',2,NULL),(11,2,0,49,'F',0,NULL),(12,3,70,100,'A',5,NULL),(13,3,60,69,'B',4,NULL),(14,3,50,59,'C',3,NULL),(15,3,45,49,'D',2,NULL),(16,3,40,44,'E',1,NULL),(17,3,0,39,'F',0,NULL);
+insert  into `grading_scales`(`id`,`grading_system_id`,`lower_bound`,`upper_bound`,`grade`,`points`,`description`) values (1,1,70,100,'A',4,NULL),(2,1,60,69,'B+',3.3,NULL),(3,1,50,59,'B',3,NULL),(4,1,45,49,'C+',2.3,NULL),(5,1,40,44,'C',2,NULL),(6,1,0,39,'F',0,NULL),(7,2,75,100,'A',4,NULL),(8,2,70,74,'A-',3.7,NULL),(9,2,60,69,'B',3,NULL),(10,2,50,59,'C',2,NULL),(11,2,0,49,'F',0,NULL),(12,3,70,100,'A',5,NULL),(13,3,60,69,'B',4,NULL),(14,3,50,59,'C',3,NULL),(15,3,45,49,'D',2,NULL),(16,3,40,44,'E',1,NULL),(17,3,0,39,'F',0,NULL),(18,4,90,100,'A',4,NULL),(19,4,80,89,'B',3,NULL),(20,4,70,79,'C',2,NULL),(21,4,0,60,'F',1,NULL);
 
 /*Table structure for table `grading_systems` */
 
@@ -103,13 +105,13 @@ DROP TABLE IF EXISTS `grading_systems`;
 
 CREATE TABLE `grading_systems` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `type` varchar(8) DEFAULT NULL,
+  `type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 /*Data for the table `grading_systems` */
 
-insert  into `grading_systems`(`id`,`type`) values (1,'WES Nige'),(2,'WES Sout'),(3,'Nigeria ');
+insert  into `grading_systems`(`id`,`type`) values (1,'WES Nigeria'),(2,'WES South Africa'),(3,'Nigeria Local'),(4,'US Local');
 
 /*Table structure for table `scores` */
 
@@ -121,7 +123,7 @@ CREATE TABLE `scores` (
   `course` int(11) DEFAULT NULL,
   `uid` int(11) DEFAULT NULL,
   `type` int(11) DEFAULT NULL,
-  `islocked` tinyint(4) DEFAULT '0',
+  `islocked` tinyint(1) DEFAULT '0',
   `semester` int(11) DEFAULT NULL,
   `academicsession` varchar(45) DEFAULT NULL,
   `overall` int(11) DEFAULT NULL,
@@ -130,11 +132,11 @@ CREATE TABLE `scores` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
 /*Data for the table `scores` */
 
-insert  into `scores`(`id`,`programme`,`course`,`uid`,`type`,`islocked`,`semester`,`academicsession`,`overall`,`score`,`cascore`,`created`,`updated`) values (1,1,1,1,1,0,1,'2014/2015',60,55,NULL,'2014-09-07 10:02:41','0000-00-00 00:00:00'),(2,1,1,1,2,0,1,'2014/2015',20,15,NULL,'2014-09-07 10:02:42','0000-00-00 00:00:00'),(3,1,1,1,2,0,1,'2014/2015',20,16,NULL,'2014-09-07 10:02:42','0000-00-00 00:00:00'),(4,1,2,1,1,0,1,'2014/2015',60,53,NULL,'2014-09-07 10:02:43','2014-09-06 18:41:54'),(5,1,2,1,2,0,1,'2014/2015',20,12,NULL,'2014-09-07 10:02:43','2014-09-06 18:43:27'),(6,1,2,1,2,0,1,'2014/2015',20,14,NULL,'2014-09-07 10:02:43','2014-09-06 18:45:44'),(7,1,3,1,1,0,1,'2013/2014',60,58,NULL,'2014-09-07 10:02:44','2014-09-07 09:18:01'),(8,1,3,1,2,0,1,'2013/2014',20,19,NULL,'2014-09-07 10:02:44','2014-09-07 09:18:59'),(9,1,3,1,2,0,1,'2013/2014',20,18,NULL,'2014-09-07 10:02:47','2014-09-07 09:19:29');
+insert  into `scores`(`id`,`programme`,`course`,`uid`,`type`,`islocked`,`semester`,`academicsession`,`overall`,`score`,`cascore`,`created`,`updated`) values (1,1,1,1,NULL,0,1,'2014/2015',100,52,32,'2014-09-14 20:04:46','2014-09-13 21:05:35'),(2,1,2,1,NULL,0,1,'2014/2015',100,45,39,'2014-09-14 20:35:38','2014-09-13 21:06:54'),(3,1,3,1,NULL,0,1,'2014/2015',100,42,39,'2014-09-14 20:35:52','2014-09-13 21:07:23'),(4,1,4,1,NULL,0,2,'2014/2015',100,45,40,'2014-09-14 20:39:07','2014-09-13 21:07:48'),(5,1,5,1,NULL,0,2,'2014/2015',100,55,33,'2014-09-14 20:39:08','2014-09-13 21:08:01'),(6,1,6,1,NULL,0,1,'2014/2015',100,55,34,'2014-09-14 20:38:04','2014-09-13 21:08:14'),(7,1,3,2,NULL,0,1,'2014/2015',100,44,30,'2014-09-14 20:44:20','2014-09-13 21:08:34'),(8,1,2,2,NULL,0,1,'2014/2015',100,44,30,'2014-09-14 20:44:41','2014-09-13 21:08:45'),(9,1,3,2,NULL,0,1,'2014/2015',100,44,35,'2014-09-14 20:43:18','2014-09-13 21:08:56'),(10,1,4,2,NULL,0,1,'2014/2015',100,40,23,'2014-09-14 20:45:47','2014-09-13 21:09:06'),(11,1,5,2,NULL,0,2,'2014/2015',100,33,20,'2014-09-14 20:46:28','2014-09-13 21:10:04'),(12,1,6,2,NULL,0,2,'2014/2015',100,55,21,'2014-09-14 20:46:50','2014-09-13 21:10:16'),(13,1,7,2,NULL,0,2,'2014/2015',100,44,22,'2014-09-14 20:47:08','2014-09-13 21:17:57'),(14,1,8,2,NULL,0,2,'2014/2015',100,20,25,'2014-09-14 20:47:30','2014-09-13 21:20:43'),(17,1,8,1,NULL,0,2,'2014/2015',100,60,25,'2014-09-14 21:20:47','2014-09-14 21:20:47');
 
 /*Table structure for table `users` */
 
@@ -145,12 +147,13 @@ CREATE TABLE `users` (
   `username` varchar(55) DEFAULT NULL,
   `password` varchar(45) DEFAULT NULL,
   `api_key` varchar(100) DEFAULT NULL,
+  `studentnumber` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 /*Data for the table `users` */
 
-insert  into `users`(`id`,`username`,`password`,`api_key`) values (1,'dtgeadamo@yahoo.com','abc123abc','abc123abc');
+insert  into `users`(`id`,`username`,`password`,`api_key`,`studentnumber`) values (1,'dtgeadamo@yahoo.com','abc123abc','abc123abc','10819960'),(2,'Eberechi Akoma','$2a$10$d7ac622b87fbf7a844cb6OPIly7Oyp5wsfDVqx','0b0c817657e89bd64894717c2a3d878c','10819961'),(3,'John Doe','$2a$10$accf40e7550f52ce2ed82uao2vDc831U9PHAS2','d2ac5463b09b5cd15fa20f2e8a01d9ad',NULL),(4,'Tommy Lee','$2a$10$f11292eefb4a0374cfa53urvvhnjhSsjgMK1zz','022c0d4907f74c952b529a8ac45efbaa',NULL);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

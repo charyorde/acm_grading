@@ -3,9 +3,11 @@
  * Configure the database and bootstrap Eloquent
  */
 
-$config = parse_ini_file("config.ini");
+$config = parse_ini_file("../config.ini");
 
-$capsule = new Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Capsule\Manager as Capsule;
+
+$capsule = new Capsule;
 
 $capsule->addConnection(array(
 		'driver'    => 'mysql',

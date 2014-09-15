@@ -2,13 +2,13 @@
 /**
  * Compute grade point by country
  * method GET
- * url /compute/gradepoint/:country/:grade
+ * url /compute/gradepoint/grade/:grade/country/:country
  */
-$app->get('/compute/gradepoint/:country/:grade', 'authenticate', function($country, $grade){
+$app->get('/compute/gradepointbycountry/grade/:grade/country/:country', 'authenticate', function($grade, $country){
 	$response = array();
 	$db = new DbHandler();
 
-	$gradepoints = $db->gradePointByCountry($country, $grade);
+	$gradepoints = $db->gradePointByCountry($grade, $country);
 	if ($gradepoints != NULL){
 		$response['error'] = false;
 		$response['gradepoint'] = $gradepoints;
@@ -24,10 +24,10 @@ $app->get('/compute/gradepoint/:country/:grade', 'authenticate', function($count
  * Compute grade point by country
  * method POST
  * params - country, grade
- * url /gradepoint/:country/:grade
+ * url /compute/gradepointbycountry
 */
-$app->post('/compute/gradepoint', 'authenticate', function() use ($app){
-	verifyRequiredParams(array('country', 'grade'));
+$app->post('/compute/gradepointbycountry', 'authenticate', function() use ($app){
+	verifyRequiredParams(array('grade', 'country'));
 
 	$response = array();
 
@@ -35,7 +35,7 @@ $app->post('/compute/gradepoint', 'authenticate', function() use ($app){
 	$grade = $app->request->post('grade');
 
 	$db = new DbHandler();
-	$gradepoints = $db->gradePointByCountry($country, $grade);
+	$gradepoints = $db->gradePointByCountry($grade, $country);
 	if ($gradepoints != NULL){
 		$response['error'] = false;
 		$response['gradepoint'] = $gradepoints;
@@ -55,12 +55,12 @@ $app->post('/compute/gradepoint', 'authenticate', function() use ($app){
  * url /compute/gradebycountry
 */
 $app->post('/compute/gradebycountry', 'authenticate', function() use ($app){
-	verifyRequiredParams(array('country', 'totalscore'));
+	verifyRequiredParams(array('totalscore', 'country'));
 
 	$response = array();
 
-	$country = $app->request->post('country');
 	$totalscore = $app->request->post('totalscore');
+	$country = $app->request->post('country');
 
 	$db = new DbHandler();
 	$gradeletter = $db->gradeLetterByCountry($totalscore, $country);
@@ -78,9 +78,9 @@ $app->post('/compute/gradebycountry', 'authenticate', function() use ($app){
 /**
  * Compute grade by country
  * method GET
- * url /compute/gradebycountry/:totalscore/:country
+ * url /compute/gradebycountry/score/:totalscore/country/:country
 */
-$app->get('/compute/gradebycountry/:totalscore/:country', 'authenticate', function($totalscore, $country){
+$app->get('/compute/gradebycountry/score/:totalscore/country/:country', 'authenticate', function($totalscore, $country){
 	$response = array();
 
 	$db = new DbHandler();
@@ -100,7 +100,7 @@ $app->get('/compute/gradebycountry/:totalscore/:country', 'authenticate', functi
  * Compute grade point by WES
  * method POST
  * params - totalscore
- * url /compute/gradebywes
+ * url /compute/gradepointbywes
 */
 $app->post('/compute/gradepointbywes', 'authenticate', function() use ($app){
 	verifyRequiredParams(array('totalscore'));
@@ -113,7 +113,7 @@ $app->post('/compute/gradepointbywes', 'authenticate', function() use ($app){
 	$gradepoint = $db->gradePointByWES($totalscore);
 	if ($gradepoint != NULL){
 		$response['error'] = false;
-		$response['WES_grade_point'] = $gradeletter;
+		$response['WES_grade_point'] = $gradepoint;
 		echoResponse(200, $response);
 	} else {
 		$response['error'] = true;
@@ -125,9 +125,9 @@ $app->post('/compute/gradepointbywes', 'authenticate', function() use ($app){
 /**
  * Compute grade point by WES
  * method GET
- * url /compute/gradepointbywes/:totalscore
+ * url /compute/gradepointbywes/score/:totalscore
 */
-$app->get('/compute/gradepointbywes/:totalscore', 'authenticate', function($totalscore){
+$app->get('/compute/gradepointbywes/score/:totalscore', 'authenticate', function($totalscore){
 	$response = array();
 
 	$db = new DbHandler();
@@ -157,7 +157,7 @@ $app->post('/compute/gradebywes', 'authenticate', function() use ($app){
 	$totalscore = $app->request->post('totalscore');
 
 	$db = new DbHandler();
-	$grade = $db->gradeByWES($totalscore);
+	$grade = $db->gradeLetterByWES($totalscore);
 	if ($grade != NULL){
 		$response['error'] = false;
 		$response['WES_grade'] = $grade;
@@ -172,13 +172,13 @@ $app->post('/compute/gradebywes', 'authenticate', function() use ($app){
 /**
  * Compute grade by WES
  * method GET
- * url /compute/gradebywes/:totalscore
+ * url /compute/gradebywes/score/:totalscore
 */
-$app->get('/compute/gradebywes/:totalscore', 'authenticate', function($totalscore){
+$app->get('/compute/gradebywes/score/:totalscore', 'authenticate', function($totalscore){
 	$response = array();
 
 	$db = new DbHandler();
-	$grade = $db->gradeByWES($totalscore);
+	$grade = $db->gradeLetterByWES($totalscore);
 	if ($grade != NULL){
 		$response['error'] = false;
 		$response['WES_grade'] = $grade;
@@ -221,9 +221,9 @@ $app->post('/compute/cumulativegpa', 'authenticate', function() use ($app){
 /**
  * Compute cumulative GPA
  * method GET
- * url /compute/cumulativegpa/:uid/:studentnumber/:programme
+ * url /compute/cumulativegpa/user/:uid/:studentnumber/:programme
 */
-$app->get('/compute/cumulativegpa/:uid/:studentnumber/:programme', 'authenticate', function($uid, $studentnumber, $programme){
+$app->get('/compute/cumulativegpa/user/:uid/:studentnumber/:programme', 'authenticate', function($uid, $studentnumber, $programme){
 	$response = array();
 
 	$db = new DbHandler();
