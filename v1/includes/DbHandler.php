@@ -278,12 +278,13 @@ class DbHandler {
 	/**
 	 * Compute grade point by WES
 	 * @param Double $totalscore
+	 * @param Double $country the country whose score needs to be converted to WES
 	 */
-	public function gradePointByWES($totalscore){
-		$grade = Capsule::table('grading_scales')->join('grading_systems', 'grading_scales.grading_system_id', '=', 'grading_systems.id')
-					->where('grading_systems.type', '=', 'WES Nigeria')
-					->where('lower_bound', '<=', $totalscore)
-					->orderBy('lower_bound', 'desc')
+	public function gradePointByWES($totalscore, $country){
+		$grade = Capsule::table('wes_us_scale')->join('countries', 'wes_us_scale.country_id', '=', 'countries.id')
+					->where('countries.country_name', '=', $country)
+					->where('wes_us_scale.lower_bound', '<=', $totalscore)
+					->orderBy('wes_us_scale.lower_bound', 'desc')
 					->first();
 		
 		if ($grade != NULL){
@@ -296,12 +297,13 @@ class DbHandler {
 	/**
 	 * Compute grade by WES (given a totalscore, return the corresponding grade or grade letter
 	 * @param Double $totalscore the total score given in percentages
+	 * @param String $country the country whose score needs to be converted to WES
 	 */
-	public function gradeLetterByWES($totalscore){
-		$grade = Capsule::table('grading_scales')->join('grading_systems', 'grading_scales.grading_system_id', '=', 'grading_systems.id')
-						->where('grading_systems.type', '=', 'WES Nigeria')
-						->where('lower_bound', '<=', $totalscore)
-						->orderBy('lower_bound', 'desc')
+	public function gradeLetterByWES($totalscore, $country){
+		$grade = Capsule::table('wes_us_scale')->join('countries', 'wes_us_scale.country_id', '=', 'countries.id')
+						->where('countries.country_name', '=', $country)
+						->where('wes_us_scale.lower_bound', '<=', $totalscore)
+						->orderBy('wes_us_scale.lower_bound', 'desc')
 						->first();
 		
 		if ($grade != NULL){

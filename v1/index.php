@@ -14,5 +14,6 @@ $user_id = NULL;
 require_once 'routes/grades.php';
 require_once 'routes/computations.php';
 require_once 'routes/users.php';
+require_once 'routes/conversions.php';
 
 $app->run();
