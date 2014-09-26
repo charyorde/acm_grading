@@ -1,0 +1,44 @@
+---
+slim:
+   profile: "dev"
+   application:
+      name: "acm_grading"
+   datasource:
+      driver-class-name: ""
+      url: ""
+      dbname: "grade"
+      username: "root"
+      password: ""
+      dbport: 3306
+      dbhost: "localhost"
+   config:
+      schoolname: ""
+      fqdn: "http://localhost/"
+      initialized: 0
+      platform_version: php-5.4.12
+      framework_version: 2.1
+      aws_bucket_name:
+      filesystem_path:
+      aws_bucket_name:
+ ---
+slim:
+   profile: "dev"
+   application:
+      name: "acm_grading"
+   datasource:
+      driver-class-name: ""
+      url: ""
+      dbname: "grade"
+      username: "root"
+      password: ""
+      dbport: 3306
+      dbhost: "localhost"
+   config:
+      schoolname: ""
+      fqdn: "http://localhost/"
+      initialized: 0
+      platform_version: php-5.4.12
+      framework_version: 2.1
+      aws_bucket_name:
+      filesystem_path:
+      aws_bucket_name:
