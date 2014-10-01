@@ -3,7 +3,8 @@
  * Configure the database and bootstrap Eloquent
  */
 
-$config = parse_ini_file("../config.ini");
+$config = yaml_parse_file("../application.yml", -1); //get all documents in yaml file
+print_r($config); exit;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
